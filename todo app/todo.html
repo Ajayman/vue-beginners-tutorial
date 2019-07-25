@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+<body>
+<div id="app">
+    <div id="todo-list-example" class="container">
+        <div class="row">
+            <div class="col-md-6 x-auto">
+                <h1 class="text-center">TODO List App
+                </h1>
+                <form v-on:submit.prevent="addNewTodo">
+                    <label for="taskname">Task Name</label>
+                    <input type="text" v-model="newTodoText" id="taskname" class="form-control"
+                           placeholder="Add New Task">
+                    <button class="btn btn-success btn-block mt-3">Submit</button>
+                </form>
+
+                <table class="table mt-3">
+                    <tr is="todo-item" v-for="(todo, index) in todos" v-bind:key="todo.id" v-bind:title="todo.title"
+                        v-on:remove=todos.splice(index,1)">
+                    </tr>
+                </table>
+
+
+                <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+                <script>
+                    var myComponent = Vue.extend({
+                        template: `
+                        <my-component
+                            v-for-"(item.index) in item"
+                            v-bind:item="item"
+                            v-bind:index="index"
+                            v-bind:key="item.id">
+                            </my-component>`
+                    })
+
+                    Vue.component('my-component', myComponent)
+
+                    Vue.component('todo-item', {
+                        template:`
+                        <tr>
+                                <td class="text-left">
+                        {{ title }}
+                            </td>
+                            <td>
+                            <button class="text-left" v-on:click="$emit('remove')" class="btn btn-danger">Remove</button>
+                            </td>
+                            </tr>`,
+                        props:['title']
+                    })
+
+                    new Vue({
+                        el: '#todo-list-example',
+                        data:{
+                            newTodoText: '',
+                            todos: [],
+                            nextTodoId: 1
+                        },
+                        methods: {
+                            addNewTodo: function(){
+                                this.todo.push({
+                                    id:this.nextTodoid++,
+                                    title: this.newTodoText
+                                })
+                                this.newTodoText = ''
+                            }
+                        }
+                    })
+                </script>
+                <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                        crossorigin="anonymous"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+                        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+                        crossorigin="anonymous"></script>
+                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+                        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+                        crossorigin="anonymous"></script>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

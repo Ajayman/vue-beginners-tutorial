@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style scoped>            <!--the scope is limited to certain component-->
+        h1{
+            font-size:2rem;
+        }
+    </style>
+</head>
+<body onload = "init()">
+<div id="tn-app">
+    <p>{{name}}</p>                                 <!--after the name is mounted vue will compile it and render to the html element-->
+    <input type="text" v-model="name">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    function init() {                                                           <!--https://www.youtube.com/watch?v=WSXN-p7jVIk-->
+        var app = new Vue({
+            el: '#tn-app',
+            data: {
+                name: 'Peter'
+            },
+
+            created: function(){
+                console.log("create book. Name: " + this.name)
+            },
+            beforeCreate: function(){
+                console.log("before create." + this.name)               //here the data this.name is not assigned in beforeCreate
+            },
+            beforeMount: function(){
+                console.log("Before Mount");
+            },
+            mounted: function(){
+                console.log("create hook. Name: " + this.name);
+            },
+            beforeUpdate: function(){
+                console.log("before Update" +this.name);
+            },
+            updated: function(){
+                console.log("updated" + this.name);
+            },
+            beforeDestroy: function(){                                          //when you move to another vue this function will be rendered
+
+            },
+            destroyed: function(){
+
+            }
+        })
+    }
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+<!--Create Phase-->
+<!--nothing data and el is initialized in before create-->
+<!--once data and el is assigned to app created is called-->
+
+<!---->

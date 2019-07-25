@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .red{
+            border: 2px solid red;
+        }
+        .green{
+            border: 2px solid green;
+        }
+    </style>
+</head>
+<body>
+<div id="root">                     <!-- if condition -->
+    <div v-if="count === 1">
+        Green
+    </div>
+    <div v-else-if="count === 2">
+        white
+    </div>
+    <div v-else>
+        Orange
+    </div>
+</div>
+
+<div id="show">
+    <div v-show="count1 === 1">
+        <!-- change the dom with display property if condition not true the display none -->
+        Blue
+    </div>
+</div>
+<br>
+<div id="bind">
+    Sign Up
+    <br>
+    <a href="#" v-text="email"></a>
+    <br>
+    <input type="text" v-model="email" :class="[email.length < 2 ? 'red' : 'green']">                              <!--short cut for v-bind is :class--> <!-- red: email.length <2 is object bind -->
+    <br>
+    <button onclick="alert('signed up')"
+            v-bind:disabled="email.length < 2">                                                  <!--dynamically addin class //A common need for data binding is manipulating an element’s class list and its inline styles-->
+        Submit
+    </button>
+</div>
+
+<div id="for">
+    <ul>
+        <li v-for="cat in cats">{{ cat }}</li>
+    </ul>
+</div>
+
+<div id="forplusbind">
+    <input type="text" v-model="newCat" v-on:keyup.enter="addKitty">
+    <button @click="addKitty"> + ADD</button>                                               <!-- @is shortcut for v:on -->
+    <ul>
+        <li v-for="cat in cats">{{ cat.name | capitalize | kittyfy }}</li>
+    </ul>
+    <cat-list :cats="cats" />
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    Vue.component('cat-list', {
+        props: ['cats'],
+        template: `
+            <ul>
+                <li v-for="cat in cats">{{ cat.name }}</li>
+            </ul>
+        `
+    })
+    new Vue({
+        el: '#root',
+        data: {
+            count: 1
+        }
+    })
+
+    new Vue({
+        el: '#show',
+        data: {
+            count1: 2
+        }
+    })
+    new Vue({
+        el: '#bind',
+        data: {
+            email: ''
+        }
+    })
+    new Vue({
+        el: '#for',
+        data:{
+            cats:[
+                'tomy',
+                'sunti',
+                'pugle',
+                'brus'
+            ]
+        }
+    })
+    new Vue({
+        el:"#forplusbind",
+        component: [
+            'cat-list'
+        ],
+        data: {
+            cats:[
+                { name: 'tommy' },
+                { name: 'ramper'},
+                { name: 'slace'},
+                { name: "fort" }
+            ],
+            newCat: ''
+        },
+        methods: {
+            addKitty: function () {
+                return this.cats.push({name: this.newCat})
+            }
+        },
+        filters: {
+            capitalize: function(value){
+                return value.toUpperCase()
+            },
+            kittyfy: function(value){
+                return value + 'Y'
+            }
+        }
+    })
+</script>
+</body>
+</html>
