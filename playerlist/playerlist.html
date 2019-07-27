@@ -26,13 +26,19 @@
                     </form>
 
                     <ol class="border border-secondary mt-3" style="min-height: 200px;">
-                        <li v-for="player in players" class="">
-                            <div class="d-flex justify-content-between">
-                                {{ player }}
-                                <a href="#" v-on:click="changeColor" v-bind:style="{ color: colorFav }"><i class="fas fa-star"></i></a>
-                                <button class="btn btn-danger" v-on:click="deletePlayer(players.indexOf(player))">Delete</button>
-                                <button class="btn btn-primary">Update</button>
-                            </div>
+                        <li v-for="(player, index) in players">
+                            <span>{{ player.name }}</span>
+                            <a href="#" v-if="player.colorFav == 'grey'" v-on:click="changeColor(index)"><i class="fas fa-star" v-bind:style="{ color: players[index].colorFav }"></i></a>
+                            <a href="#" v-else v-on:click="defaultColor(index)"><i class="far fa-star" v-bind:style="{ color: players[index].colorFav }"></i></a>
+                            <button v-on:click="updatePlayer(index)">Update</button>
+                            <button v-on:click="deletePlayer(index)">Delete</button>
+                        </li>
+                    </ol>
+                </div>
+                <div class="col-md-4">
+                    <ol class="border border-secondary mt-3" style="min-height: 200px;">
+                        <li v-for="(player,index) in favPlayers">
+                            <a href="#" v-if="player.colorFav == 'yellow'" v-on:click="remList(index)"><span>{{ player.name }}</span><i class="fas fa-star text-warning"></i></a>
                         </li>
                     </ol>
                 </div>
@@ -40,38 +46,47 @@
         </div>
     </div>
 </div>
-
-
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script>
     new Vue({
         el: '#app',
         data: {
             player: '',
-            // players: [{player : '', colorFav: ''}],
-            players: [],
-            colorFav: '',
-            a: 0
+            players: [{name : 'ajay', colorFav : 'grey'},{name : 'sanjay', colorFav : 'grey'} ],
+            favPlayers:[{name: '', colorFav : ''}]
         },
         methods: {
             addNewPlayer: function () {
-                this.players.push(
-                       this.player
-
-                )
+                this.players.push({
+                       name : this.player,
+                        colorFav : 'grey'
+            })
             },
-            changeColor: function () {
-                // this.players.push({
-                //     this.color
-                // })
-                this.colorFav = 'yellow';
+            changeColor: function (index) {
+                this.players[index].colorFav = 'yellow';
+                console.log(this.players[index].colorFav);
+                this.favPlayers.push({
+                    name : this.players[index].name,
+                    colorFav : 'yellow'
+                })
+                 return this.players[index].colorFav;
             },
-            deletePlayer: function(a){
-               return this.players.splice(a-2, a);
+            defaultColor: function (index) {
+                this.players[index].colorFav = 'grey';
+                console.log(this.players[index].colorFav);
+                return this.players[index].colorFav;
+            },
+            updatePlayer: function(index){
+                this.players[index].name = prompt("Name", "Text");
+            },
+            deletePlayer: function(index){
+               return this.players.splice(index);
+            },
+            remList: function(index){
+                return this.favPlayers.splice(index)
             }
         }
     })
-    console.log(players.indexOf('ajay'))
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
