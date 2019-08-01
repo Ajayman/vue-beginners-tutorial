@@ -17,7 +17,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <form v-on:submit.prevent="addNewPlayer" class="border border-secondary">
+                    <p v-if="errors.length">
+                        <b>Please correct the following error(s):</b>
+                    <ul>
+                        <li v-for="error in errors">{{ error }}</li>
+                    </ul>
+                    </p>
+                    <form v-on:submit.prevent="checkForm" class="border border-secondary">
                         <div class="d-flex justify-content-between">
                             <label>Player Name:</label>
                             <input type="text" v-model="player" placeholder="add new player">
@@ -28,17 +34,22 @@
                     <ol class="border border-secondary mt-3" style="min-height: 200px;">
                         <li v-for="(player, index) in players">
                             <span>{{ player.name }}</span>
-                            <a href="#" v-if="player.colorFav == 'grey'" v-on:click="changeColor(index)"><i class="fas fa-star" v-bind:style="{ color: players[index].colorFav }"></i></a>
-                            <a href="#" v-else v-on:click="defaultColor(index)"><i class="far fa-star" v-bind:style="{ color: players[index].colorFav }"></i></a>
-                            <button v-on:click="updatePlayer(index)">Update</button>
-                            <button v-on:click="deletePlayer(index)">Delete</button>
+                            <a href="#" v-if="player.colorFav == 'grey'" v-on:click="changeColor(index)"><i
+                                    class="fas fa-star" v-bind:style="{ color: players[index].colorFav }"></i></a>
+                            <!--<a href="#" v-if="player.colorFav == 'yellow'" v-on:click="changeColor(index)"><i-->
+                                    <!--class="fas fa-star" v-bind:style="{ color: players[index].colorFav }"></i></a>-->
+                            <a href="#" v-else-if="player.colorFav == 'yellow'" v-on:click="defaultColor(player, index)"><i class="far fa-star"
+                                                                                   v-bind:style="{ color: players[index].colorFav }"></i></a>
+                            <button v-on:click="updatePlayer(index,player)">Update</button>
+                            <button v-on:click="deletePlayer(index, player)">Delete</button>
                         </li>
                     </ol>
                 </div>
                 <div class="col-md-4">
                     <ol class="border border-secondary mt-3" style="min-height: 200px;">
                         <li v-for="(player,index) in favPlayers">
-                            <a href="#" v-if="player.colorFav == 'yellow'" v-on:click="remList(index)"><span>{{ player.name }}</span><i class="fas fa-star text-warning"></i></a>
+                            <a href="#" v-if="player.colorFav == 'yellow'" v-on:click="remList(index)"><span>{{ player.name }}</span><i
+                                    class="fas fa-star text-warning"></i></a>
                         </li>
                     </ol>
                 </div>
@@ -48,46 +59,115 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script>
-    new Vue({
+    var vue = new Vue({
         el: '#app',
         data: {
             player: '',
-            players: [{name : 'ajay', colorFav : 'grey'},{name : 'sanjay', colorFav : 'grey'} ],
-            favPlayers:[{name: '', colorFav : ''}]
+            players: [],
+            favPlayers: [],
+            errors: []
         },
         methods: {
-            addNewPlayer: function () {
-                this.players.push({
-                       name : this.player,
-                        colorFav : 'grey'
-            })
+            checkForm: function (player) {
+                console.log(player)
+                if (!this.player) {
+                    this.errors.push('Player Name required')
+                }
+                else{
+                    this.errors.pop();
+                    this.addNewPlayer()
+                }
+            },
+            addNewPlayer: function (player) {
+                var isplayer = false
+                for (var i = 0; i < this.players.length; i++) {
+
+                    if (this.players[i].name == this.player) {
+                        isplayer = true
+                     }
+                }
+                if(isplayer){
+                    this.errors.push('Name already exist');
+                }
+                else {
+                    this.players.push({
+                        name: this.player,
+                        colorFav: 'grey'
+                    })
+                    this.player = ''
+                }
             },
             changeColor: function (index) {
                 this.players[index].colorFav = 'yellow';
-                console.log(this.players[index].colorFav);
                 this.favPlayers.push({
                     name : this.players[index].name,
-                    colorFav : 'yellow'
+                    colorFav: this.players[index].colorFav,
+                    colorFav: 'yellow'
                 })
-                 return this.players[index].colorFav;
-            },
-            defaultColor: function (index) {
-                this.players[index].colorFav = 'grey';
-                console.log(this.players[index].colorFav);
                 return this.players[index].colorFav;
             },
-            updatePlayer: function(index){
-                this.players[index].name = prompt("Name", "Text");
+            defaultColor: function (player, index) {
+                this.players[index].colorFav = 'grey';
+                // var isplayer = false
+                // for (var i = 0; i < this.favPlayers.length; i++) {
+                //     if (this.favPlayers[i].name == this.player) {
+                //         isplayer = true
+                //     }
+                // }
+                // if(isplayer){
+                //     this.errors.push('Name already exist');
+                // }
+                this.favPlayers.splice(index, 1);
+                // console.log(this.players[index].colorFav);
+                // return this.players[index].colorFav;
             },
-            deletePlayer: function(index){
-               return this.players.splice(index);
+            updatePlayer: function (index, player) {
+               var x = prompt("Name", player.name);
+               var y = player.name;
+               if(x){
+                   var isplayer = false
+                   for (var i = 0; i < this.players.length; i++) {
+                       if (this.players[i].name == x) {
+                           this.errors.pop();
+                           isplayer = true
+                       }
+                   }
+                   if(isplayer){
+                       this.errors.push('Name already exist');
+                   }
+                   else{
+                   this.players[index].name = x;
+                   }
+
+               }
+               else{
+                   this.players[index].name = y;
+               }
+
             },
-            remList: function(index){
+            deletePlayer: function (index, player) {
+                if(confirm('Are you sure you want to delete?')) {
+                    this.players.splice(index, 1);
+                }
+            },
+            remList: function (index) {
+                this.players[index].colorFav = "grey";
                 return this.favPlayers.splice(index)
             }
         }
     })
 </script>
+<!--todo-->
+<!--delete confirmation to whether it should delete-->
+
+
+
+<!--<script>-->
+<!--array = ['name',3,{name: 'ajay', id : 3, gender: 'male'}, {name: 'bijay', address: 'kamalbinayak'}]-->
+<!--obj = {device: 'laptop', price: "20k", id: 1, boolean : true, model : undefined, person: []}-->
+<!--console.log(array[2].name)-->
+<!--console.log(obj.boolean)-->
+<!--</script>-->
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -99,3 +179,4 @@
         crossorigin="anonymous"></script>
 </body>
 </html>
+
