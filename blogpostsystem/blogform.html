@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="blog.css">
+</head>
+<body>
+<div id="blogapp">
+    <button @click="clearform2">Add Blog</button>
+    <button @click="block = 'showBlog'" :disabled="blogList.length < 1">Show Blog List</button>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4" v-if="block === 'addBlog'">
+                <form v-on:submit.prevent="addBlog"
+                      class="blog-form border border-secondary rounded px-3 py-2">
+                    <h3>Blog Form Post:</h3>
+                    <p v-if="msg" class="alert alert-success alert-dismissible fade show">{{ msg }}
+                    </p>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input v-model="title" placeholder="Blog Title" type="text" class="w-100" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date:</label>
+                        <input v-model="published_date" placeholder="date" type="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Author:</label>
+                        <select v-model="author" required>
+                            <option value="">Please select one</option>
+                            <option v-for="author1 in authors">{{ author1 }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Detail:</label>
+                        <textarea v-model="detail" name="" id=""
+                                  placeholder="Describe your blog in 100 words:" class="w-100" height="20"
+                                  required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Category:</label>
+                        <select v-model="category" required>
+                            <option value="">Please select one</option>
+                            <option v-for="category in categories">{{ category }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select v-model="status" required>
+                            <option value="">Select one</option>
+                            <option v-for="status in statuses">{{ status }}</option>
+                        </select>
+                    </div>
+                    <button v-if="test == 2" class="btn btn-primary">Submit</button>
+                    <button else-if="test == 1" @click="updateIndex" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+            <div class="col-md-8" v-else-if="block === 'showBlog'">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div v-for="(list, index) in blogList" class="border rounded p-2">
+                            <a class="blog_head" @click.prevent="setCurrent(index)"><h4>{{ list.title }}</h4></a>
+                            <a class="blog_head badge badge-danger" @click.prevent="deleteBlog(index)">Delete</a>
+                            <a class="blog_head badge badge-warning" @click.prevent="updateBlog(index)">Update</a>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span><i class="fas fa-table mr-2"></i>{{ list.p_date }}</span>
+                                <span><i class="fas fa-user-check mr-2"></i>{{ list.author }}</span>
+                            </div>
+                            <h6 class="badge badge-success">{{ list.status }}</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div v-if="blogList[blog_index]" class="border rounded p-2">
+                            <h3 class="px-3 py-1 bg-dark text-white">Detail on Blog</h3>
+                            <h4>{{ blogList[blog_index].title }}</h4>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span><i class="fas fa-table mr-2"></i>{{ blogList[blog_index].p_date }}</span>
+                                <span><i class="fas fa-user-check mr-2"></i>{{ blogList[blog_index].author }}</span>
+                            </div>
+                            <p>{{ blogList[blog_index].detail }}</p>
+                            <div class="d-flex justify-content-start">
+                                <span class="badge badge-success">{{ blogList[blog_index].status }}</span>
+                                <span><i class="fas fa-eye text-secondary ml-3"></i>{{ blogList[blog_index].visitcount }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="blog.js"></script>
+</body>
+</html>

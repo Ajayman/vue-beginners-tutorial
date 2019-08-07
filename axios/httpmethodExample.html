@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <button v-on:click="showAll">
+        Show All
+    </button>
+    <button v-on:click="select = 'addform'">Create Post</button>
+    <form v-on:submit.prevent="showOne" class="d-inline">
+        <input type="number" v-model="box">
+        <button class="border border-secondary">Show One</button>
+    </form>
+    <div class="container">
+        <div class="row">
+            <div v-if="select === 'showbox'" v-for="list in postList" class="col-md-3 mb-5">
+                <div class="border border-dark rounded p-3" style="height: 300px;">
+                    <div class="d-flex justify-content-between">
+                        <span>UserId : {{ list.userId }}</span>
+                        <button v-on:click="updatePost(list.id)" class="badge badge-primary">Update</button>
+                        <button v-on:click="deleteBox(list.id)" class="badge badge-danger">Delete</button>
+                        <span>Id: {{ list.id }}</span>
+                    </div>
+                    <p class="">title: {{ list.title }}</p>
+                    <div class=" border border-secondary overflow-auto h-50 m-3 p-2">
+                        {{ list.body }}
+                    </div>
+                </div>
+            </div>
+            <div v-if="select === 'addform'" class="col-md-4">
+                <div>
+                    <form v-on:submit.prevent="addPost">
+                        UserId: <input type="number" v-model="form.post.userId"><br>
+                        Title: <input type="text" v-model="form.post.title"><br>
+                        Body: <input type="text" v-model="form.post.body">
+                        <button class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <div v-if="select === 'updateform'" class="col-md-4">
+                <form v-on:submit.prevent="updatePostHttp(this.id)">
+                    UserId: <input type="number" v-model="userId"><br>
+                    Title: <input type="text" v-model="title"><br>
+                    Body: <input type="text" v-model="body">
+                    <button class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <div v-if="select === 'show1'" class="col-md-4">
+                <div class="border border-dark rounded p-3">
+                    <div class="d-flex justify-content-between">
+                        <span>UserId : {{ list.userId }}</span>
+                        <button class="badge badge-primary">Update</button>
+                        <button v-on:click="deleteBox" class="badge badge-danger">Delete</button>
+                        <span>Id: {{ list.id }}</span>
+                    </div>
+                    <p class="">title: {{ list.title }}</p>
+                    <div class=" border border-secondary overflow-auto h-50 m-3 p-2">
+                        {{ list.body }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var vue = new Vue({
+        el: '#app',
+        data: {
+            box: 0,
+            select: null,
+            userId: 0,
+            id: 0,
+            title: '',
+            body: '',
+            form: {
+                post: {}
+            },
+            postList: []
+        },
+        methods: {
+            showAll: function () {
+                this.select = 'showbox';
+                this.postList = [{status: 'loading'}];
+                var vue = this;
+                axios.get('https://jsonplaceholder.typicode.com/posts')
+                    .then(function (response) {
+                        vue.postList = response.data
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            addPost: function () {
+                var vue = this;
+                axios({
+                    method: 'POST',
+                    url: 'https://jsonplaceholder.typicode.com/posts',
+                    data: {
+                        userId: vue.form.post.userId,
+                        id: vue.form.post.id,
+                        title: vue.form.post.title,
+                        body: vue.form.post.body,
+                    }
+                })
+                    .then(function (response) {
+                        var vue = this;
+                        console.log(response);
+                        this.postList.push(
+                            response.data
+                        )
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            updatePost: function (id) {
+                this.id = id;
+                this.select = 'updateform';
+                this.userId = this.postList[id].userId
+                this.title = this.postList[id].title
+                this.body = this.postList[id].body
+            },
+            updatePostHttp: function(id){
+                var vue = this;
+                axios.put('https://jsonplaceholder.typicode.com/posts' +id, {
+                    userId: this.userId,
+                    title: this.title,
+                    body: this.body
+            })
+                    .then(function (response) {
+                        vue.postList = response.data
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            deleteBox: function (id) {
+                axios.delete('https://jsonplaceholder.typicode.com/posts/' + id, {})
+                    .then(function (response) {
+                        vue.postList = response.data
+
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            showOne: function () {
+                this.select = 'show1';
+                this.postList = [{status: 'loading'}];
+                var vue = this;
+                axios.get('https://jsonplaceholder.typicode.com/posts', {
+                    params: {
+                        id: this.box
+                    }
+                })
+                    .then(function (response) {
+                        vue.postList = response.data
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        }
+    })
+</script>
+</body>
+</html>
